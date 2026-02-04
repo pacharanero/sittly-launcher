@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 export const playPause = () => invoke("play_pause_music");
 export const prevMedia = () => invoke("previous_media");

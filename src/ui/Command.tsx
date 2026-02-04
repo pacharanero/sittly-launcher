@@ -1,9 +1,10 @@
 import { mapExtensionsNoResultItems } from "@/extensions/extension-assembly";
-import { appWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import React, { forwardRef, useEffect } from "react";
 
 import sittlyDevtools from "../devtools/index";
 
+const appWindow = getCurrentWindow();
 const { components } = sittlyDevtools;
 const { Command: SittlyCommand } = components;
 export default forwardRef(function (
@@ -16,8 +17,8 @@ export default forwardRef(function (
 ) {
   const noresult = mapExtensionsNoResultItems();
   useEffect(() => {
-    appWindow.onFocusChanged(({ payload: focused }) => {
-      if (focused) (inputRef as any).current?.focus();
+    appWindow.onFocusChanged(({ payload: focused }: { payload: boolean }) => {
+      if (focused) (inputRef as React.MutableRefObject<HTMLInputElement | null>).current?.focus();
     });
   }, []);
   return (

@@ -1,11 +1,11 @@
-import { save } from "@tauri-apps/api/dialog";
-import { writeBinaryFile } from "@tauri-apps/api/fs";
+import { save } from "@tauri-apps/plugin-dialog";
+import { writeFile } from "@tauri-apps/plugin-fs";
 import { downloadDir } from "@tauri-apps/api/path";
 import { sendNotification } from "./notifications";
 import { fileTypeFromBuffer } from "file-type";
-import { fetch, ResponseType } from "@tauri-apps/api/http";
+import { fetch } from "@tauri-apps/plugin-http";
 import { notifyAsyncOperationStatus } from "./indicators";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { File } from "../types/models";
 
 /**
@@ -23,12 +23,12 @@ export const saveImage = async (imageSrc: string) => {
 
   // Fetch the image as a blob
   let fileType = "";
-  const { data: blob } = await fetch(imageSrc, {
-    responseType: ResponseType.Binary,
+  const response = await fetch(imageSrc, {
     method: "GET",
   });
+  const blob = await response.arrayBuffer();
 
-  const arrayBuffer = new Uint8Array(blob as any);
+  const arrayBuffer = new Uint8Array(blob);
   fileType = (await fileTypeFromBuffer(arrayBuffer))?.ext || "";
   if (blob && fileType) {
     // Save into the default downloads directory, like in the browser
@@ -40,7 +40,7 @@ export const saveImage = async (imageSrc: string) => {
 
     if (filePath) {
       // Now we can write the file to the disk
-      await writeBinaryFile(filePath, arrayBuffer);
+      await writeFile(filePath, arrayBuffer);
       notifyAsyncOperationStatus({
         title: "Image saved",
         description: "The image has been saved to " + filePath,
@@ -82,7 +82,7 @@ export async function findFiles({
   const results = await invoke<File[]>("find_files", {
     query,
     baseDir,
-  }).catch((err) => {
+  }).catch((err: unknown) => {
     console.log(err);
 
     notifyAsyncOperationStatus({
@@ -108,7 +108,7 @@ export async function readDir({ path }: { path: string }) {
   });
   const results = await invoke<File[]>("read_dir", {
     path,
-  }).catch((err) => {
+  }).catch((err: unknown) => {
     console.log(err);
 
     notifyAsyncOperationStatus({

@@ -1,7 +1,7 @@
-import { invoke } from "@tauri-apps/api";
-import { createDir, writeBinaryFile } from "@tauri-apps/api/fs";
-import { fetch, ResponseType } from "@tauri-apps/api/http";
-import { open } from "@tauri-apps/api/shell";
+import { invoke } from "@tauri-apps/api/core";
+import { mkdir, writeFile } from "@tauri-apps/plugin-fs";
+import { fetch } from "@tauri-apps/plugin-http";
+import { open } from "@tauri-apps/plugin-shell";
 import { fileTypeFromBuffer } from "file-type";
 import { sendNotification } from "./notifications";
 import { homeDir, join } from "@tauri-apps/api/path";
@@ -55,23 +55,23 @@ export const setWallpaper = async (path: string): Promise<void> => {
   if (path.startsWith("http") || path.startsWith("https")) {
     // Fetch the image as a blob
     let fileType = "";
-    const { data: blob } = await fetch(path, {
-      responseType: ResponseType.Binary,
+    const response = await fetch(path, {
       method: "GET",
     });
+    const blob = await response.arrayBuffer();
 
-    const arrayBuffer = new Uint8Array(blob as any);
+    const arrayBuffer = new Uint8Array(blob);
     fileType = (await fileTypeFromBuffer(arrayBuffer))?.ext || "";
     if (blob && fileType) {
       // Save into the default downloads directory, like in the browser
       const suggestedFilename = path.replaceAll("/", "_");
       const baseTempPath = await join(await homeDir(), ".sittly", "temp");
-      await createDir(baseTempPath, {
+      await mkdir(baseTempPath, {
         recursive: true,
       });
       const tempAssetsPathFile = await join(baseTempPath, suggestedFilename);
       // Now we can write the file to the disk
-      await writeBinaryFile(tempAssetsPathFile, arrayBuffer);
+      await writeFile(tempAssetsPathFile, arrayBuffer);
       await invoke("set_wallpaper", { path: tempAssetsPathFile });
       notifyAsyncOperationStatus({
         title: "Wallpaper set",
@@ -131,7 +131,7 @@ export async function cmd(
       stdout: response,
       stderr: null,
     };
-  } catch (err) {
+  } catch (err: unknown) {
     console.log(err);
     notifyAsyncOperationStatus({
       title: "Error",

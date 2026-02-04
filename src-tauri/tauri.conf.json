@@ -1,77 +1,18 @@
 {
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Sittly",
+  "version": "0.0.0-alpha.14",
+  "identifier": "com.jkominovic.sittly",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": true
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "Sittly",
-    "version": "0.0.0-alpha.14"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": ".*"
-      },
-      "http": {
-        "all": true,
-        "request": true,
-        "scope": ["https://**"]
-      },
-      "clipboard": {
-        "all": true
-      },
-      "globalShortcut": {
-        "all": true
-      },
-      "notification": {
-        "all": true
-      },
-      "path": {
-        "all": true
-      },
-      "fs": {
-        "all": false,
-        "copyFile": false,
-        "createDir": true,
-        "exists": false,
-        "readDir": true,
-        "readFile": true,
-        "removeDir": true,
-        "removeFile": false,
-        "renameFile": false,
-        "scope": ["$HOME/.sittly/**/*"],
-        "writeFile": true
-      },
-      "window": {
-        "all": true
-      },
-      "dialog": {
-        "all": true
-      }
-    },
-
-    "bundle": {
-      "active": true,
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.jkominovic.sittly",
-      "targets": "deb"
-    },
+  "app": {
+    "withGlobalTauri": true,
     "security": {
       "csp": null
-    },
-    "updater": {
-      "active": false
     },
     "windows": [
       {
@@ -89,5 +30,16 @@
         "transparent": true
       }
     ]
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "targets": ["deb"]
   }
 }

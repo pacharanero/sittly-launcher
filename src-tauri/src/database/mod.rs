@@ -3,9 +3,10 @@ pub mod database {
 
     use once_cell::sync::Lazy;
     use rustbreak::{deser::Bincode, Database, PathDatabase};
-    use tauri::api::path::home_dir;
+
     fn build_sittly_db_directory() -> std::path::PathBuf {
-        let mut path = home_dir().unwrap();
+        let home = std::env::var("HOME").expect("HOME environment variable not set");
+        let mut path = std::path::PathBuf::from(home);
         path.push(".sittly");
         path.push("db");
         path

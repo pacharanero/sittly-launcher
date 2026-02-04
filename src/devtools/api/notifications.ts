@@ -2,7 +2,7 @@ import {
   isPermissionGranted,
   requestPermission,
   sendNotification as tauriSendNotification,
-} from "@tauri-apps/api/notification";
+} from "@tauri-apps/plugin-notification";
 
 export const sendNotification = async (props: {
   title: string;

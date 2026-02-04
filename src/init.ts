@@ -1,6 +1,6 @@
 import React from "react";
 import sittlyDevtools from "./devtools/index";
-import { createDir, readDir, readTextFile } from "@tauri-apps/api/fs";
+import { mkdir, readDir, readTextFile } from "@tauri-apps/plugin-fs";
 import { join, homeDir } from "@tauri-apps/api/path";
 
 async function initLoad() {
@@ -14,9 +14,9 @@ async function initLoad() {
   const home = await homeDir();
   const sittlyExtensionsPath = await join(home, ".sittly", "extensions");
 
-  await createDir(sittlyExtensionsPath, {
+  await mkdir(sittlyExtensionsPath, {
     recursive: true,
-  }).catch((err) => console.log(err));
+  }).catch((err: unknown) => console.log(err));
 
   const sittlyExtensions = await readDir(sittlyExtensionsPath);
   console.log("SITTLY EXTENSIONS PATH: ", sittlyExtensionsPath);
@@ -27,8 +27,9 @@ async function initLoad() {
   console.log("THIS SCRIPT: ", thisScript);
   (await Promise.allSettled(
     sittlyExtensions.map(async (extension) => {
-      const extensionFile = await join(extension.path, "dist", "compiled.js");
-      const fileContent = await readTextFile(extensionFile);
+      const extensionFile = await join(extension.name, "dist", "compiled.js");
+      const fullPath = await join(sittlyExtensionsPath, extensionFile);
+      const fileContent = await readTextFile(fullPath);
       const script = document.createElement("script");
       script.innerHTML = fileContent;
       script.async = false;

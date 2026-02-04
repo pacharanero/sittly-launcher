@@ -30,6 +30,64 @@
 
 ## Plan + roadmap phases
 
+### Phase 0 — Raycast Extension API (Clean-Room Reverse Engineering)
+Target: API-compatible extension SDK that allows Raycast extensions to run on Sittly.
+
+#### Research & documentation
+- [ ] Document the `@raycast/api` public TypeScript interface from npm types.
+- [ ] Document the `@raycast/utils` package hooks and helpers.
+- [ ] Map the extension manifest format (`package.json` superset with commands, preferences, tools).
+- [ ] Document command modes: `view`, `no-view`, `menu-bar`.
+- [ ] Document the command lifecycle (launch types, props, unloading conditions).
+
+#### Core UI components
+- [ ] Implement `<List>` component with sections, items, filtering, and detail panels.
+- [ ] Implement `<Grid>` component for image-focused layouts.
+- [ ] Implement `<Detail>` component with markdown rendering.
+- [ ] Implement `<Form>` component with all field types (TextField, PasswordField, TextArea, Checkbox, DatePicker, Dropdown, TagPicker, FilePicker).
+- [ ] Implement `<ActionPanel>` and `<Action>` components with keyboard shortcuts.
+- [ ] Implement `<MenuBarExtra>` for menu bar commands.
+
+#### System APIs
+- [ ] Implement `LocalStorage` API (encrypted key-value store).
+- [ ] Implement `Cache` API (LRU disk-based cache).
+- [ ] Implement `Clipboard` API (copy, paste, read, clear).
+- [ ] Implement `environment` object (extension info, paths, appearance, launch context).
+- [ ] Implement `Keyboard.Shortcut` system with common shortcuts.
+
+#### Navigation & feedback
+- [ ] Implement `popToRoot`, `closeMainWindow`, `clearSearchBar` functions.
+- [ ] Implement `showToast`, `showHUD`, `confirmAlert` feedback APIs.
+- [ ] Implement `launchCommand` for inter-command navigation.
+- [ ] Implement `updateCommandMetadata` for dynamic command subtitles.
+
+#### System integration
+- [ ] Implement `open` function for URLs and files.
+- [ ] Implement `getSelectedFinderItems` equivalent for file selection.
+- [ ] Implement `getSelectedText` for system-wide text selection.
+- [ ] Implement preferences system with type generation.
+
+#### Extension runtime
+- [ ] Build extension loader that parses Raycast-style manifests.
+- [ ] Implement React-to-native-UI bridge for declarative rendering.
+- [ ] Implement extension sandboxing and memory limits.
+- [ ] Implement background refresh for interval-based commands.
+- [ ] Add extension compatibility shim for `@raycast/api` imports.
+
+#### Utilities package (`@sittly/utils` mirroring `@raycast/utils`)
+- [ ] Implement `usePromise` and `useCachedPromise` hooks.
+- [ ] Implement `useFetch` with caching and pagination.
+- [ ] Implement `useForm` for form state management.
+- [ ] Implement `useExec` for shell command execution.
+- [ ] Implement `useLocalStorage` and `useCachedState` hooks.
+- [ ] Implement `useFrecencySorting` for usage-based ordering.
+- [ ] Implement `showFailureToast` and `getFavicon` utilities.
+
+#### Validation & testing
+- [ ] Create test harness to run real Raycast extensions (MIT/open-source only).
+- [ ] Document API coverage percentage vs. `@raycast/api`.
+- [ ] Publish compatibility matrix for supported features.
+
 ### Phase 1 — AI chat as a flagship surface
 - [ ] Launch AI chat page inside the launcher (primary interaction surface).
 - [ ] Local history + prompt management with opt-out storage controls.
@@ -94,7 +152,8 @@
 - [ ] Add SPDX front matter to source files and enforce via linting/CI.
 
 ## Ordering rationale
-- [ ] Cross-platform core must come first to avoid feature fragmentation.
+- [ ] Raycast API reverse-engineering is Phase 0 to unlock the extension ecosystem early and inform all later SDK/extension work.
+- [ ] Cross-platform core must come early to avoid feature fragmentation.
 - [ ] Performance improvements should precede major feature expansion to keep UI fast.
 - [ ] AI features depend on safe permissioning and robust extension APIs.
 - [ ] Distribution and CI should mature once platform parity is stable.

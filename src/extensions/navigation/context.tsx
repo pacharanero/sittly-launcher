@@ -3,8 +3,9 @@ import { BsArrowLeft, BsArrowRight, BsHouse, BsSun } from "react-icons/bs";
 import { IoMdExit, IoMdRefresh } from "react-icons/io";
 import React from "react";
 import sittlyDevtools from "../../devtools/index";
-import { appWindow } from "@tauri-apps/api/window";
-import { SunMoon } from "lucide-react";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+
+const appWindow = getCurrentWindow();
 
 const { hooks } = sittlyDevtools;
 

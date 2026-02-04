@@ -7,10 +7,7 @@ pub mod events;
 use crate::database::database::open_database;
 use gnome_dbus_api::handlers::easy_gnome::apps::Apps;
 use gnome_dbus_api::handlers::easy_gnome::battery;
-use gnome_dbus_api::handlers::easy_gnome::extensions;
-use gnome_dbus_api::handlers::easy_gnome::interface;
 use gnome_dbus_api::handlers::easy_gnome::nightlight;
-use gnome_dbus_api::handlers::easy_gnome::peripherals;
 use gnome_dbus_api::handlers::easy_gnome::screen;
 use once_cell::sync::Lazy;
 
@@ -25,10 +22,9 @@ use std::{
     thread::{self, sleep},
     time::Duration,
 };
-use tauri::Manager;
+use tauri::{Emitter, Manager, WebviewWindowExt};
 use upower_dbus::BatteryState;
 use upower_dbus::BatteryType;
-use wallpaper;
 
 static DATABASE: Lazy<Database<HashMap<String, String>, rustbreak::backend::PathBackend, Bincode>> =
     Lazy::new(|| open_database());
@@ -145,18 +141,50 @@ async fn get_devices_battery() -> Result<Vec<DeviceBatery>, String> {
     Ok(devices)
 }
 
+#[tauri::command]
+async fn get_system_apps() -> Result<Vec<SystemApp>, String> {
+    let system_apps_instance = Apps::new();
+    let system_apps = system_apps_instance.get_apps();
+    let system_apps_json: Vec<SystemApp> = system_apps
+        .iter()
+        .map(|app| SystemApp {
+            name: app.name.to_string(),
+            icon: app.get_base64_icon(),
+            description: match &app.description {
+                Some(description) => Some(description.clone().to_string()),
+                None => None,
+            },
+            execute: app.executable.clone(),
+        })
+        .collect();
+    Ok(system_apps_json)
+}
+
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_global_shortcut::init())
         .setup(|app| {
-            let app_handle = app.app_handle();
-            let main_window = app.get_window("sittly").unwrap();
+            let app_handle = app.handle().clone();
+            let main_window = app.get_webview_window("sittly").unwrap();
+            
+            #[cfg(debug_assertions)]
+            {
+                main_window.open_devtools();
+            }
+            
             thread::spawn(move || loop {
-                if !main_window.is_focused().unwrap() {
+                if !main_window.is_focused().unwrap_or(false) {
                     sleep(Duration::from_millis(5000));
                     continue;
                 }
                 let player_info = events::music::get_player_info();
-                app_handle.emit_all("player_status", &player_info).unwrap();
+                let _ = app_handle.emit("player_status", &player_info);
                 // If music is playing wait 1 second, else wait 5 seconds
                 if player_info != "No music playing" {
                     sleep(Duration::from_millis(1000));
@@ -167,40 +195,6 @@ fn main() {
 
             Ok(())
         })
-        .on_page_load(move |window, _| {
-            #[cfg(debug_assertions)] // only include this code on debug builds
-            {
-                window.open_devtools();
-            };
-            let _ = window.clone().run_on_main_thread(move || {
-                let system_apps_instance = Apps::new();
-                let system_apps = system_apps_instance.get_apps();
-                let system_apps_json: Vec<SystemApp> = system_apps
-                    .iter()
-                    .map(|app| SystemApp {
-                        name: app.name.to_string(),
-                        icon: app.get_base64_icon(),
-                        description: match &app.description {
-                            Some(description) => Some(description.clone().to_string()),
-                            None => None,
-                        },
-                        execute: app.executable.clone(),
-                    })
-                    .collect();
-                window
-                    .eval(
-                        format!(
-                            "window.systemApps = {}",
-                            serde_json::to_string(&system_apps_json).unwrap()
-                        )
-                        .as_str(),
-                    )
-                    .unwrap()
-            });
-        })
-        // .manage(AppState {
-        //     writer: Arc::new(AsyncMutex::new(writer)),
-        // })
         .invoke_handler(tauri::generate_handler![
             events::music::play_pause_music,
             events::music::previous_media,
@@ -215,6 +209,7 @@ fn main() {
             events::cmd::cmd,
             events::app::download_extension,
             events::app::show_app,
+            get_system_apps,
             set_wallpaper,
             read_database,
             write_database,

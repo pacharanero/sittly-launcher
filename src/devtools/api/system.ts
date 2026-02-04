@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { BatteryDevice, SystemApp } from "../types/models";
 import { hideApp } from "./app";
 
@@ -33,9 +33,10 @@ export async function brightnessDown() {
   return invoke<void>("brightness_down");
 }
 
-export function getSystemApps(): SystemApp[] {
-  return (window as any).systemApps as SystemApp[];
+export async function getSystemApps(): Promise<SystemApp[]> {
+  return invoke<SystemApp[]>("get_system_apps");
 }
+
 export async function openApp(appExecutable: SystemApp["execute"]) {
   invoke<void>("open_app", { appExecutable });
   hideApp();

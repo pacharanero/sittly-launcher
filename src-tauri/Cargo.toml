@@ -8,25 +8,31 @@ repository = "https://github.com/JulianKominovic/sittly-launcher"
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "1.2", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1.2", features = [ "window-all", "http-all", "dialog-all", "fs-remove-dir", "fs-read-dir", "fs-write-file", "fs-create-dir", "fs-read-file", "clipboard-all", "global-shortcut-all", "notification-all", "path-all", "shell-open"] }
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-http = "2"
+tauri-plugin-global-shortcut = "2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = { version = "1.26.0", features = ["time"] }
+tokio = { version = "1", features = ["time"] }
 playerctl = "0.1.0"
 wallpaper = "3.2.0"
 rust_search = "2.1.0"
-base64 = "0.21.3"
-once_cell = "1.18.0"
-gnome-dbus-api = "1.0.4"
+base64 = "0.22"
+once_cell = "1"
+gnome-dbus-api = "1.1"
 upower_dbus = "0.3.2"
 
 [dependencies.rustbreak]
 version = "2"
 features = ["bin_enc"]
-
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api";
-import { writeText, readText } from "@tauri-apps/api/clipboard";
+import { invoke } from "@tauri-apps/api/core";
+import { writeText, readText } from "@tauri-apps/plugin-clipboard-manager";
 import { sendNotification } from "./notifications";
 import { hideApp } from "./app";
 

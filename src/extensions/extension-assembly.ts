@@ -15,7 +15,7 @@ import {
   ExtensionNoResultItems,
   ExtensionPages,
 } from "../devtools/types";
-import { createDir, removeDir, writeFile } from "@tauri-apps/api/fs";
+import { mkdir, remove, writeTextFile } from "@tauri-apps/plugin-fs";
 import { join, homeDir } from "@tauri-apps/api/path";
 
 const extensions = (window as any).__SITTLY_EXTENSIONS__ ?? [];
@@ -108,10 +108,10 @@ export async function downloadExtension(githubRepoUrl: string) {
   );
 
   const response = await fetch(rawGithubFile).then((res) => res.text());
-  await createDir(sittlyExtensionsPath, { recursive: true }).catch((err) =>
+  await mkdir(sittlyExtensionsPath, { recursive: true }).catch((err: unknown) =>
     console.log(err)
   );
-  await writeFile(sittlyExtensionsPathDistFile, response).catch((err) =>
+  await writeTextFile(sittlyExtensionsPathDistFile, response).catch((err: unknown) =>
     console.log(err)
   );
 }
@@ -126,7 +126,7 @@ export async function deleteExtension(extension: ExtensionMetadata) {
   const [_, _username, repo] = Url.pathname.split("/");
   const sittlyExtensionsPath = await join(home, ".sittly", "extensions", repo);
 
-  await removeDir(sittlyExtensionsPath, {
+  await remove(sittlyExtensionsPath, {
     recursive: true,
-  }).catch((err) => console.log(err));
+  }).catch((err: unknown) => console.log(err));
 }

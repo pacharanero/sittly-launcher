@@ -1,8 +1,8 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 export const write = (
   key: string,
-  value: Record<any, any> | any[]
+  value: Record<string, unknown> | unknown[]
 ): Promise<string | void> => {
   return invoke<string | void>("write_database", {
     key,
@@ -10,10 +10,10 @@ export const write = (
   });
 };
 
-export const read = <T extends Record<any, any> | any[] | void>(
+export const read = <T extends Record<string, unknown> | unknown[] | void>(
   key: string
 ): Promise<T> => {
   return invoke<string>("read_database", {
     key,
-  }).then((value) => (value ? JSON.parse(value) : value));
+  }).then((value: string) => (value ? JSON.parse(value) : value));
 };
