@@ -9,10 +9,6 @@ Launcher for Linux similar to Raycast, Spotlight, Albert...
 - [spec.md](./spec.md) — current functionality and architecture overview.
 - [roadmap.md](./roadmap.md) — unified plan + roadmap with AI, cross-platform, and distribution goals.
 
-## Demo!
-
-https://github.com/JulianKominovic/sittly-launcher/assets/70329467/0a3e76fa-951a-4a99-b838-250df98575a2
-
 ## Features (current)
 
 - App search + launcher (Linux).
