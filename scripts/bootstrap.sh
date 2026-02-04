@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if command -v corepack >/dev/null 2>&1; then
+  corepack enable
+fi
+
+pnpm install
+
+if command -v cargo >/dev/null 2>&1; then
+  cargo fetch --locked || cargo fetch
+fi

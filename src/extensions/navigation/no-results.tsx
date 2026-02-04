@@ -17,6 +17,7 @@ import {
   BsKey,
   BsMicrosoft,
   BsQrCode,
+  BsTerminal,
   BsYoutube,
 } from "react-icons/bs";
 import { SiDuckduckgo, SiYoutubemusic } from "react-icons/si";
@@ -26,7 +27,7 @@ import { useTodoist } from "../todoist/use-todoist";
 const { hooks, utils, api } = sittlyDevtools;
 const { useServices, useRouter } = hooks;
 const { clipboard, shell } = api;
-const { openURI } = shell;
+const { openURI, cmd } = shell;
 const { pasteToCurrentWindow, copyToClipboard } = clipboard;
 const SUPPORTED_HASHES = [
   "md4",
@@ -43,6 +44,15 @@ const SUPPORTED_HASHES = [
   "crc32",
   "crc32b",
 ];
+
+const parseShellCommand = (input: string) => {
+  const tokens =
+    input.match(/(?:[^\s"]+|"[^"]*")+/g)?.map((token) =>
+      token.replace(/^"(.*)"$/, "$1")
+    ) ?? [];
+  const [command, ...args] = tokens;
+  return { command, args };
+};
 /**
  * Extension items needs to be a function in order to use hooks
  * @returns Extension items
@@ -51,6 +61,14 @@ const items: ExtensionNoResultItems = () => {
   const { goTo, location, reload } = useRouter();
   const { addTask } = useTodoist();
   const searchbarText = useServices((state) => state.searchbarText);
+  const normalizedSearch = searchbarText.trim();
+  const isShellCommand = normalizedSearch.startsWith(">");
+  const shellCommandInput = normalizedSearch.replace(/^>\s*/, "");
+  const { command: shellCommand, args: shellArgs } =
+    parseShellCommand(shellCommandInput);
+  const shellCommandDisplay = shellCommand
+    ? [shellCommand, ...shellArgs].join(" ")
+    : "";
   const isEmail = utils.isEmail(searchbarText);
   const isBase64 = utils.isBase64(searchbarText);
   const isDate = utils.isDate(searchbarText);
@@ -80,6 +98,32 @@ const items: ExtensionNoResultItems = () => {
           header: "",
         };
   return [
+    ...(isShellCommand && shellCommand
+      ? [
+          {
+            onClick() {
+              cmd(shellCommand, shellArgs);
+            },
+            title: "Run shell command",
+            description: shellCommandDisplay,
+            icon: <BsTerminal />,
+            mainActionLabel: "Run",
+            show: true,
+          },
+          {
+            onClick() {
+              cmd(shellCommand, shellArgs).then(({ stdout }) => {
+                if (stdout) copyToClipboard(stdout.trim());
+              });
+            },
+            title: "Run and copy stdout",
+            description: shellCommandDisplay,
+            icon: <BsTerminal />,
+            mainActionLabel: "Run",
+            show: true,
+          },
+        ]
+      : []),
     ...hashChecks,
     // Open email in fav app
     {
