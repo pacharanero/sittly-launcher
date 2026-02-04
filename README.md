@@ -5,13 +5,16 @@
 Launcher for Linux similar to Raycast, Spotlight, Albert...
 
 ## Docs
+
 - [spec.md](./spec.md) — current functionality and architecture overview.
 - [roadmap.md](./roadmap.md) — unified plan + roadmap with AI, cross-platform, and distribution goals.
 
 ## Demo!
+
 https://github.com/JulianKominovic/sittly-launcher/assets/70329467/0a3e76fa-951a-4a99-b838-250df98575a2
 
 ## Features (current)
+
 - App search + launcher (Linux).
 - File explorer with previews, copy/paste, and open actions.
 - Music controls (play/pause, next/prev, volume).
@@ -23,12 +26,15 @@ https://github.com/JulianKominovic/sittly-launcher/assets/70329467/0a3e76fa-951a
 - AI chat page (MVP UI + local history).
 
 ## Usage
+
 ### Search and actions
+
 1. Open the launcher and type a query.
 2. Use **Enter** to run the main action.
 3. Use **Ctrl+O** to open the context menu actions.
 
 ### Shell commands
+
 Use the `>` prefix to run a shell command. Example:
 
 ```
@@ -38,34 +44,41 @@ Use the `>` prefix to run a shell command. Example:
 You will get command results via notifications, and you can choose “Run and copy stdout” to copy output to your clipboard.
 
 ### Files
+
 Open the **Files** page to browse directories. Selecting a file shows metadata and actions like copy path, copy contents, and open with the default app.
 
 ### Extensions
+
 Open **Extensions** to manage installed extensions, or **Store** to download new ones.
 
 ### Tasks
+
 Open **Todoist** to create and manage tasks. From the search bar, type a task name when no results are found and choose “Create task.”
 
 ### AI Chat
+
 Open **AI Chat** to access the prompt box and a local conversation history. Provider settings (API key, base URL, model, local toggle) are stored locally and will power upcoming integrations.
 
 ## Automation scripts
-Common workflows live in the `scripts/` folder:
 
-| Script | Purpose |
-| --- | --- |
-| `scripts/bootstrap.sh` | Install dependencies and prefetch Rust crates |
-| `scripts/dev.sh` | Run the Vite dev server |
-| `scripts/tauri-dev.sh` | Run the Tauri dev app |
-| `scripts/build.sh` | Build the web assets |
-| `scripts/tauri-build.sh` | Build the Tauri app |
+Common workflows live in the `s/` folder:
+
+| Script          | Purpose                                       |
+| --------------- | --------------------------------------------- |
+| `s/bootstrap`   | Install dependencies and prefetch Rust crates |
+| `s/dev`         | Run the Vite dev server                       |
+| `s/tauri-dev`   | Run the Tauri dev app                         |
+| `s/build`       | Build the web assets                          |
+| `s/tauri-build` | Build the Tauri app                           |
 
 ## Development
-1. Run `scripts/bootstrap.sh` once.
-2. Use `scripts/tauri-dev.sh` for the desktop app.
-3. Use `scripts/dev.sh` for the web UI (limited Tauri APIs in browser mode).
+
+1. Run `s/bootstrap` once.
+2. Use `s/tauri-dev` for the desktop app.
+3. Use `s/dev` for the web UI (limited Tauri APIs in browser mode).
 
 ## Interact with your OS
+
 ![image](https://github.com/JulianKominovic/sittly-launcher/assets/70329467/01520c1b-40a9-4017-a9cb-c68bb9e5f39c)
 ![image](https://github.com/JulianKominovic/sittly-launcher/assets/70329467/7b743274-eecc-450a-a1c0-31dc4f7f2225)
 ![image](https://github.com/JulianKominovic/sittly-launcher/assets/70329467/a97ed981-d20a-4e7d-821a-5a4e99c6355a)
